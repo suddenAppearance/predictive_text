@@ -1,8 +1,10 @@
 import sys, os
 import curses
+from predictive_text import Model
 
 
 def draw_menu(stdscr):
+    global model
     k = 0
     cursor_x = 0
     cursor_y = 0
@@ -16,13 +18,14 @@ def draw_menu(stdscr):
     curses.init_pair(1, curses.COLOR_CYAN, curses.COLOR_BLACK)
     curses.init_pair(2, curses.COLOR_RED, curses.COLOR_BLACK)
     curses.init_pair(3, curses.COLOR_BLACK, curses.COLOR_WHITE)
+    curses.init_pair(4, curses.COLOR_GREEN, curses.COLOR_BLACK)
     written_text = ""
     suggested_text = ""
     predicted_word = ""
 
     # Loop where k is the last character pressed
     while k != 27:
-
+        predicted_word = model.buildPhrase(written_text)
         # Initialization
         stdscr.clear()
         height, width = stdscr.getmaxyx()
@@ -43,6 +46,14 @@ def draw_menu(stdscr):
         rows = written_text.split('\n')
         for i in range(len(rows)):
             stdscr.addstr(i, 0, rows[i])
+        cursor_x = len(rows[len(rows) - 1])
+        cursor_y = len(rows)
+        if not (predicted_word == '' or predicted_word is None):
+            stdscr.attron(curses.color_pair(1))
+            stdscr.addstr(cursor_x, cursor_y, ' ')
+            stdscr.attron(curses.color_pair(4))
+            stdscr.addstr(predicted_word)
+            stdscr.attroff(curses.color_pair(4))
         stdscr.attroff(curses.color_pair(1))
         # Refresh the screen
         stdscr.refresh()
@@ -56,4 +67,6 @@ def main():
 
 
 if __name__ == "__main__":
+    print('Wait for loading...')
+    model = Model()
     main()

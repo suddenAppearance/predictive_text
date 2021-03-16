@@ -1,6 +1,8 @@
 import sys, os
 import curses
-
+print('for the sake of crossplatformability (ord with russian symbols doesn\'t work well on linux) please enter А, Я symbols on ur keyboard')
+rus_a = ord(input('А: ')[:1])
+rus_z = ord(input('Я:')[:1])
 
 def draw_menu(stdscr):
     k = 0
@@ -18,7 +20,7 @@ def draw_menu(stdscr):
     curses.init_pair(3, curses.COLOR_BLACK, curses.COLOR_WHITE)
 
     # Loop where k is the last character pressed
-    while k != ord('q'):
+    while k != 'q':
 
         # Initialization
         stdscr.clear()
@@ -84,7 +86,7 @@ def draw_menu(stdscr):
         stdscr.refresh()
 
         # Wait for next input
-        k = stdscr.getch()
+        k = stdscr.getkey()
 
 
 def main():
