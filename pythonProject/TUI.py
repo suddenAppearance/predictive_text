@@ -1,0 +1,59 @@
+import sys, os
+import curses
+
+
+def draw_menu(stdscr):
+    k = 0
+    cursor_x = 0
+    cursor_y = 0
+
+    # Clear and refresh the screen for a blank canvas
+    stdscr.clear()
+    stdscr.refresh()
+
+    # Start colors in curses
+    curses.start_color()
+    curses.init_pair(1, curses.COLOR_CYAN, curses.COLOR_BLACK)
+    curses.init_pair(2, curses.COLOR_RED, curses.COLOR_BLACK)
+    curses.init_pair(3, curses.COLOR_BLACK, curses.COLOR_WHITE)
+    written_text = ""
+    suggested_text = ""
+    predicted_word = ""
+
+    # Loop where k is the last character pressed
+    while k != 27:
+
+        # Initialization
+        stdscr.clear()
+        height, width = stdscr.getmaxyx()
+
+        cursor_x = max(0, cursor_x)
+        cursor_x = min(width - 1, cursor_x)
+
+        cursor_y = max(0, cursor_y)
+        cursor_y = min(height - 1, cursor_y)
+
+        # creating input simulation
+        if ord('А') <= k <= ord('Я') or ord('а') <= k <= ord('я') or k == ord('\n'):
+            written_text += chr(k)
+        elif k == ord('\b'):
+
+            written_text = written_text[:len(written_text) - 1]
+        stdscr.attron(curses.color_pair(1))
+        rows = written_text.split('\n')
+        for i in range(len(rows)):
+            stdscr.addstr(i, 0, rows[i])
+        stdscr.attroff(curses.color_pair(1))
+        # Refresh the screen
+        stdscr.refresh()
+
+        # Wait for next input
+        k = stdscr.getch()
+
+
+def main():
+    curses.wrapper(draw_menu)
+
+
+if __name__ == "__main__":
+    main()
