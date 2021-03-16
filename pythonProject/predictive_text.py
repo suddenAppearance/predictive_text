@@ -1,3 +1,6 @@
+import os
+os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 from tensorflow.keras.preprocessing.text import Tokenizer
 
 import numpy as np
@@ -34,8 +37,8 @@ class Model:
     model1 = load_model('model1')
     model2 = load_model('model2')
     model3 = load_model('model3')
-    model4 = load_model('model4')
-    model5 = load_model('model5')
+    # model4 = load_model('model4')
+    # model5 = load_model('model5')
 
     def buildPhrase(self, data):
         if data == '' or data is None:
@@ -48,12 +51,12 @@ class Model:
             return self.build2(data)
         if len(data) == 3:
             return self.build3(data)
-        if len(data) == 4:
-            return self.build4(data)
-        if len(data) == 5:
-            return self.build5(data)
-        else:
-            return ''
+        # if len(data) == 4:
+        #     return self.build4(data)
+        # if len(data) == 5:
+        #     return self.build5(data)
+        # else:
+        #     return ''
 
     def build5(self, data):
         x = data[:self.inp_words]

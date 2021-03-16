@@ -1,3 +1,4 @@
+print('Wait for loading...')
 import sys, os
 import curses
 from predictive_text import Model
@@ -25,7 +26,6 @@ def draw_menu(stdscr):
 
     # Loop where k is the last character pressed
     while k != 27:
-        predicted_word = model.buildPhrase(written_text)
         # Initialization
         stdscr.clear()
         height, width = stdscr.getmaxyx()
@@ -37,20 +37,24 @@ def draw_menu(stdscr):
         cursor_y = min(height - 1, cursor_y)
 
         # creating input simulation
-        if ord('А') <= k <= ord('Я') or ord('а') <= k <= ord('я') or k == ord('\n'):
+        if ord('А') <= k <= ord('Я') or ord('а') <= k <= ord('я') or k == ord(' ') or k == ord('\n'):
             written_text += chr(k)
         elif k == ord('\b'):
-
             written_text = written_text[:len(written_text) - 1]
         stdscr.attron(curses.color_pair(1))
         rows = written_text.split('\n')
         for i in range(len(rows)):
             stdscr.addstr(i, 0, rows[i])
-        cursor_x = len(rows[len(rows) - 1])
+        cursor_x = len(rows[len(rows) - 1]) + 1
         cursor_y = len(rows)
+        predicted_word = model.buildPhrase(written_text)
         if not (predicted_word == '' or predicted_word is None):
             stdscr.attron(curses.color_pair(1))
-            stdscr.addstr(cursor_x, cursor_y, ' ')
+            print(rows)
+            print(len(rows))
+            print(cursor_x)
+            print(cursor_y)
+            stdscr.addstr(cursor_y - 1, cursor_x - 1, ' ')
             stdscr.attron(curses.color_pair(4))
             stdscr.addstr(predicted_word)
             stdscr.attroff(curses.color_pair(4))
@@ -67,6 +71,5 @@ def main():
 
 
 if __name__ == "__main__":
-    print('Wait for loading...')
     model = Model()
     main()
