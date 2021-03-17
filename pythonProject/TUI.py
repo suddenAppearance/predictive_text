@@ -1,5 +1,4 @@
-print('Wait for loading...')
-import sys, os
+import time
 import curses
 from predictive_text import Model
 
@@ -41,19 +40,21 @@ def draw_menu(stdscr):
             written_text += chr(k)
         elif k == ord('\b'):
             written_text = written_text[:len(written_text) - 1]
+        elif k == ord('\t'):
+            written_text += (" " if written_text[len(written_text) - 1] != " " else '') + predicted_word  # predicted word will be rewritten after
         stdscr.attron(curses.color_pair(1))
         rows = written_text.split('\n')
         for i in range(len(rows)):
             stdscr.addstr(i, 0, rows[i])
         cursor_x = len(rows[len(rows) - 1]) + 1
         cursor_y = len(rows)
-        predicted_word = model.buildPhrase(written_text)
+        predicted_word = model.buildPhrase(rows[len(rows)-1])
         if not (predicted_word == '' or predicted_word is None):
             stdscr.attron(curses.color_pair(1))
-            print(rows)
-            print(len(rows))
-            print(cursor_x)
-            print(cursor_y)
+            # print(rows)
+            # print(len(rows))
+            # print(cursor_x)
+            # print(cursor_y)
             stdscr.addstr(cursor_y - 1, cursor_x - 1, ' ')
             stdscr.attron(curses.color_pair(4))
             stdscr.addstr(predicted_word)
@@ -71,5 +72,8 @@ def main():
 
 
 if __name__ == "__main__":
+    print('Loading models for predictive text')
     model = Model()
+    print('Starting...')
+    time.sleep(0.5)
     main()
