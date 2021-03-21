@@ -1,4 +1,6 @@
 import os
+import time
+
 os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 from tensorflow.keras.preprocessing.text import Tokenizer
@@ -19,18 +21,20 @@ class Model:
             texts2 = texts.replace('\ufeff', '')  # убираем первый невидимый символ
 
         texts += texts2
-        maxWordsCount = 1000
-        tokenizer = Tokenizer(num_words=maxWordsCount, filters='!–"—#$%&amp;()*+,-./:;<=>?@[\\]^_`{|}~\t\n\r«»',
+        self.maxWordsCount = 1000
+        tokenizer = Tokenizer(num_words=self.maxWordsCount, filters='!–"—#$%&amp;()*+,-./:;<=>?@[\\]^_`{|}~\t\n\r«»',
                               lower=True, split=' ', char_level=False)
         tokenizer.fit_on_texts([texts])
         self.tokenizer = tokenizer
         self.inp_words = 5
+        a = time.time()
         print('Loading model1')
         self.model1 = load_model('model1')
         print('Loading model2')
         self.model2 = load_model('model2')
         print('Loading model3')
         self.model3 = load_model('model3')
+        print(time.time() - a)
         # models 4 and 5 are commented out to save memory and speed up the load can be uncommented if needed
         # self.model4 = load_model('model4')
         # self.model5 = load_model('model5')
@@ -39,13 +43,30 @@ class Model:
     def buildPhrase(self, data):
         if data == '' or data is None:
             return ''
-        data = self.tokenizer.texts_to_sequences([data])[0]
-        data = data[len(data) - 3:]
-        if len(data) == 1:
+        data = data.split()
+        data = data[max(0, len(data) - 3):]
+        i = 0
+        while i < len(data):
+            ind = self.tokenizer.word_index.get(data[i])
+            if ind is None or ind > self.maxWordsCount:
+                try:
+                    data = data[i + 1:]
+                except IndexError:
+                    data = []
+            else:
+                i += 1
+        print(data)
+        print(len(data))
+        l = len(data)
+        if len(data) == 0:
+            return ''
+        data = self.tokenizer.texts_to_sequences(data)[0]
+
+        if l == 1:
             return self.build1(data)
-        if len(data) == 2:
+        if l == 2:
             return self.build2(data)
-        if len(data) == 3:
+        if l == 3:
             return self.build3(data)
         # if len(data) == 4:
         #     return self.build4(data)
@@ -79,7 +100,7 @@ class Model:
     #     return res
 
     def build3(self, data):
-        x = data[:self.inp_words]
+        x = data
         inp = np.expand_dims(x, axis=0)
 
         pred = self.model3.predict(inp)
@@ -91,7 +112,7 @@ class Model:
         return res
 
     def build2(self, data):
-        x = data[:self.inp_words]
+        x = data
         inp = np.expand_dims(x, axis=0)
 
         pred = self.model2.predict(inp)
@@ -103,7 +124,7 @@ class Model:
         return res
 
     def build1(self, data):
-        x = data[:self.inp_words]
+        x = data
         inp = np.expand_dims(x, axis=0)
 
         pred = self.model1.predict(inp)
@@ -113,3 +134,9 @@ class Model:
         res = self.tokenizer.index_word[indx]  # дописываем строку
 
         return res
+
+
+if __name__ == '__main__':
+    model = Model()
+    for i in range(1000):
+        model.buildPhrase(input())
