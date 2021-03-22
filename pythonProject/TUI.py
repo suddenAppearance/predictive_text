@@ -49,14 +49,17 @@ def draw_menu(stdscr):
             written_text = written_text[:len(written_text) - 1]
         elif k == ord('\t'):
             if predicted_word != '' and predicted_word is not None:
-                written_text += (" " if written_text[len(written_text) - 1] != " " else '') + predicted_word  # predicted word will be rewritten after
+                written_text += (" " if written_text[len(
+                    written_text) - 1] != " " else '') + predicted_word  # predicted word will be rewritten after
             else:
                 written_text += t9_word
         stdscr.attron(curses.color_pair(1))
         rows = written_text.split('\n')
+        for i in range(len(rows)):
+            stdscr.addstr(i, 0, rows[i])
         cursor_x = len(rows[len(rows) - 1]) + 1
         cursor_y = len(rows)
-        predicted_word = model.buildPhrase(rows[len(rows)-1].lower())
+        predicted_word = model.buildPhrase(rows[len(rows) - 1].lower())
         if not (predicted_word == '' or predicted_word is None):
             stdscr.attron(curses.color_pair(1))
             # print(rows)
@@ -69,8 +72,8 @@ def draw_menu(stdscr):
             stdscr.attroff(curses.color_pair(4))
         elif written_text:
             stdscr.attron(curses.color_pair(5))
-            words = rows[len(rows)-1].split()
-            last = words[len(words)-1]
+            words = rows[len(rows) - 1].split()
+            last = words[len(words) - 1]
             print(last)
             t9_word = t9.T9().complete(last.lower())
             print(t9_word)
