@@ -51,6 +51,7 @@ class Model:
             if ind is None or ind > self.maxWordsCount:
                 try:
                     data = data[i + 1:]
+                    i = 0
                 except IndexError:
                     data = []
             else:

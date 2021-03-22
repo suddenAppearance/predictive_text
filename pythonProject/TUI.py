@@ -54,8 +54,6 @@ def draw_menu(stdscr):
                 written_text += t9_word
         stdscr.attron(curses.color_pair(1))
         rows = written_text.split('\n')
-        for i in range(len(rows)):
-            stdscr.addstr(i, 0, rows[i])
         cursor_x = len(rows[len(rows) - 1]) + 1
         cursor_y = len(rows)
         predicted_word = model.buildPhrase(rows[len(rows)-1].lower())

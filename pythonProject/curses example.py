@@ -1,8 +1,6 @@
 import sys, os
 import curses
-print('for the sake of crossplatformability (ord with russian symbols doesn\'t work well on linux) please enter А, Я symbols on ur keyboard')
-rus_a = ord(input('А: ')[:1])
-rus_z = ord(input('Я:')[:1])
+
 
 def draw_menu(stdscr):
     k = 0
