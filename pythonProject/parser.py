@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup
 with open('Lepra_wall.txt', 'w') as f:
     for i in range(0, 348549):
         try:
-            content = requests.get(f'https://m.vk.com/wall-30022666_{348549-i}').content
+            content = requests.get(f'https://m.vk.com/wall-30022666_{348549 - i}').content
             content = content.decode('utf8')
             print(i)
             soup = BeautifulSoup(content, 'html.parser')

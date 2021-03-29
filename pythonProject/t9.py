@@ -21,4 +21,9 @@ class T9:
     def complete(self, pre_word):
         for word, count in self.words:
             if pre_word == word[:len(pre_word)]:
+                print(word)
                 return word[len(pre_word):]
+        return ''
+
+if __name__ == '__main__':
+    T9().complete('ребя')

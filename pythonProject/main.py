@@ -67,7 +67,7 @@ def buildPhrase(texts,):
     inp = np.expand_dims(x, axis=0)
 
     pred = model.predict(inp)
-    indx = pred.argmax(axis=1)[0]
+    indx = pred.argmax(axis=1)[0]  # this need to be rewritten whether u want 1 or more suggestions
     data.append(indx)
 
     return tokenizer.index_word[indx]
