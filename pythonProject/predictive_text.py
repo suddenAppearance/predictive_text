@@ -45,25 +45,30 @@ class Model:
                     data = []
             else:
                 i += 1
-        print(data)
-        print(len(data))
+        if os.environ['PT_LOGGING']:
+            print(f'LOGS: list of last recognized words is {data}')
         l = len(data)
         if len(data) == 0:
             return ''
+        if os.environ['PT_LOGGING']:
+            print(f'LOGS: using {l} words prediction model')
         data = self.tokenizer.texts_to_sequences(data)[0]
-
+        ans = ''
         if l == 1:
-            return self.build1(data)
+            ans = self.build1(data)
         if l == 2:
-            return self.build2(data)
+            ans = self.build2(data)
         if l == 3:
-            return self.build3(data)
+            ans = self.build3(data)
         # if len(data) == 4:
         #     return self.build4(data)
         # if len(data) == 5:
         #     return self.build5(data)
         # else:
         #     return ''
+        if os.environ['PT_LOGGING']:
+            print(f'LOGS: for {str(data)} array model predicted word: {ans}')
+        return ans
 
     # def build5(self, data):
     #     x = data[:self.inp_words]

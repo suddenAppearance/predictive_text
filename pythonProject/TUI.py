@@ -4,6 +4,7 @@ import curses
 
 os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+os.environ['PT_LOGGING'] = '0'
 import t9
 from predictive_text import Model
 
@@ -29,6 +30,7 @@ def draw_menu(stdscr):
     suggested_text = ""
     predicted_word = ""
     t9_word = ""
+    last_is_space = ""
 
     # Loop where k is the last character pressed
     while k != 27:
@@ -45,6 +47,7 @@ def draw_menu(stdscr):
         # creating input simulation
         if ord('А') <= k <= ord('Я') or ord('а') <= k <= ord('я') or k == ord(' ') or k == ord('\n'):
             written_text += chr(k)
+            last_is_space = k == ' '
         elif k == ord('\b'):
             written_text = written_text[:len(written_text) - 1]
         elif k == ord('\t'):
@@ -53,30 +56,39 @@ def draw_menu(stdscr):
                     written_text) - 1] != " " else '') + predicted_word  # predicted word will be rewritten after
             else:
                 written_text += t9_word
-        stdscr.attron(curses.color_pair(1))
-        rows = written_text.split('\n')
-        for i in range(len(rows)):
-            stdscr.addstr(i, 0, rows[i])
-        cursor_x = len(rows[len(rows) - 1]) + 1
-        cursor_y = len(rows)
-        predicted_word = model.buildPhrase(rows[len(rows) - 1].lower())
+        abstracts = written_text.split('\n')
+        i = 0
+        j = 0
+        while i < len(abstracts):
+            abstract = abstracts[i]
+            if len(abstract) < width:
+                stdscr.addstr(j, 0, abstract)
+                i += 1
+                j += 1
+                cursor_x = len(abstract) + 1
+            else:
+                cut_words = abstract[:width].split()
+                stdscr.addstr(j, 0, " ".join(cut_words[:-1]))
+                cursor_x = len(abstract)
+                j += 1
+                print(abstract)
+                abstracts[i] = cut_words[-1] + abstract[width:]
+        cursor_y = j - 1
+        predicted_word = model.buildPhrase(written_text.split('\n')[-1])
         if not (predicted_word == '' or predicted_word is None):
             stdscr.attron(curses.color_pair(1))
-            # print(rows)
-            # print(len(rows))
-            # print(cursor_x)
-            # print(cursor_y)
-            stdscr.addstr(cursor_y - 1, cursor_x - 1, ' ')
+            if not last_is_space:
+                stdscr.addstr(cursor_y, cursor_x - 1, ' ')
             stdscr.attron(curses.color_pair(4))
             stdscr.addstr(predicted_word)
             stdscr.attroff(curses.color_pair(4))
         elif written_text:
             stdscr.attron(curses.color_pair(5))
-            words = rows[len(rows) - 1].split()
-            last = words[len(words) - 1]
-            print(last)
-            t9_word = t9.T9().complete(last.lower())
-            print(t9_word)
+            try:
+                last = written_text.split('\n')[-1].split()[-1]
+            except IndexError:
+                last = ''
+            t9_word = t9.T9().complete(last)
             stdscr.addstr(t9_word)
             stdscr.attroff(curses.color_pair(5))
         stdscr.attroff(curses.color_pair(1))
