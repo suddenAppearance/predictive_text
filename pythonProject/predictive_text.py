@@ -1,4 +1,5 @@
 import os
+import pickle
 import time
 
 os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
@@ -12,28 +13,16 @@ from tensorflow.python.keras.models import load_model
 
 class Model:
     def __init__(self):
-        with open('Lepra_wall.txt', 'r', encoding='utf-8') as f:
-            texts = f.read()
-            texts = texts.replace('\ufeff', '')  # убираем первый невидимый символ
-
-        with open('LIFE_wall.txt', 'r', encoding='utf-8') as f:
-            texts2 = f.read()
-            texts2 = texts.replace('\ufeff', '')  # убираем первый невидимый символ
-
-        texts += texts2
-        self.maxWordsCount = 1000
-        tokenizer = Tokenizer(num_words=self.maxWordsCount, filters='!–"—#$%&amp;()*+,-./:;<=>?@[\\]^_`{|}~\t\n\r«»',
-                              lower=True, split=' ', char_level=False)
-        tokenizer.fit_on_texts([texts])
-        self.tokenizer = tokenizer
-        self.inp_words = 5
+        print('Loading dictionary')
+        self.tokenizer: Tokenizer = pickle.load(open('tokenizer.obj', 'rb'))
+        self.maxWordsCount = 9997
         a = time.time()
         print('Loading model1')
-        self.model1 = load_model('model1')
+        self.model1 = load_model('1_word.h5')
         print('Loading model2')
-        self.model2 = load_model('model2')
+        self.model2 = load_model('2_word.h5')
         print('Loading model3')
-        self.model3 = load_model('model3')
+        self.model3 = load_model('3_word.h5')
         print(time.time() - a)
         # models 4 and 5 are commented out to save memory and speed up the load can be uncommented if needed
         # self.model4 = load_model('model4')
@@ -140,4 +129,4 @@ class Model:
 if __name__ == '__main__':
     model = Model()
     for i in range(1000):
-        model.buildPhrase(input())
+        print(model.buildPhrase(input()))

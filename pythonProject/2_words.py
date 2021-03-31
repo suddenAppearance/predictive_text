@@ -19,7 +19,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 with open('textv2.txt', 'r', encoding='utf8') as f:
     text = f.read()
 
-max_words = 10000
+max_words = 9997
 inp_words = 2
 tokenizer = Tokenizer(num_words=max_words, lower=False, split=' ', char_level=False)
 tokenizer.fit_on_texts([text])

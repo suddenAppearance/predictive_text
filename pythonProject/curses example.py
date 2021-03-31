@@ -1,6 +1,8 @@
 import sys, os
 import curses
+import locale
 
+locale.setlocale(locale.LC_ALL, ('RU','UTF8'))
 
 def draw_menu(stdscr):
     k = 0
@@ -42,11 +44,11 @@ def draw_menu(stdscr):
         # Declaration of strings
         title = "Curses example"[:width - 1]
         subtitle = "Written by Clay McLeod"[:width - 1]
-        keystr = "Last key pressed: {}".format(k)[:width - 1]
         statusbarstr = "Press 'q' to exit | STATUS BAR | Pos: {}, {}".format(cursor_x, cursor_y)
-        if k == 0:
-            keystr = "No key press detected..."[:width - 1]
-
+        keystr = "No key press detected..."[:width - 1]
+        if k != 0:
+            keystr = k
+            keystr = "Last key pressed: {}".format(str(ord(keystr)))[:width - 1]
         # Centering calculations
         start_x_title = int((width // 2) - (len(title) // 2) - len(title) % 2)
         start_x_subtitle = int((width // 2) - (len(subtitle) // 2) - len(subtitle) % 2)
