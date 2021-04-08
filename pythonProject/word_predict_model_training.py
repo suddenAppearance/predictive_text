@@ -4,23 +4,23 @@ from collections import defaultdict, Counter
 
 import numpy as np
 import matplotlib.pyplot as plt
-from tensorflow.keras.layers import Dense, Embedding, InputLayer
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.preprocessing.text import Tokenizer
-from tensorflow.keras.utils import to_categorical
+from keras.layers import Dense, Embedding, InputLayer
+from keras.models import Sequential
+from keras.preprocessing.text import Tokenizer
+from keras.utils import to_categorical
 
 import tensorflow as tf
-from tensorflow.keras.layers import LSTM
-from tensorflow.python.keras.layers import Dropout, Bidirectional
-from tensorflow.python.keras.models import load_model
-from tensorflow.python.keras.callbacks import EarlyStopping
+from keras.layers import LSTM
+from keras.layers import Dropout, Bidirectional
+from keras.models import load_model
+from keras.callbacks import EarlyStopping
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 with open('textv2.txt', 'r', encoding='utf8') as f:
     text = f.read()
 
-max_words = 20000
+max_words = 10000
 tokenizer = Tokenizer(num_words=max_words, lower=False, split=' ', char_level=False)
 tokenizer.fit_on_texts([text])
 pickle.dump(tokenizer, open('tokenizer.obj', 'bw'))
@@ -32,9 +32,6 @@ y_train = list()
 for sentence in sentences:
     if len(sentence) < 2:
         continue
-    if len(x_train) != len(y_train):
-        print(len(x_train))
-        break
     x_train.extend(sentence[:-1])
     y_train.extend(sentence[1:])
 del sentences
@@ -46,14 +43,15 @@ del x_train
 del y_train
 model = Sequential()
 model.add(Embedding(max_words, 256))
+model.add(LSTM(128, return_sequences=True))
 model.add(LSTM(128))
 model.add(Dense(max_words, activation='softmax'))
 # simple early stopping
-es = EarlyStopping(monitor='val_loss', mode='min', verbose=1, patience=2)
+es = EarlyStopping(monitor='loss', mode='min', verbose=1, patience=2)
 
 model.compile(loss='categorical_crossentropy', metrics=['accuracy'], optimizer='adam')
 print(model.summary())
-history = model.fit(X, Y, batch_size=64, epochs=50, callbacks=[es])
+history = model.fit(X, Y, batch_size=128, epochs=50, callbacks=[es])
 model.save('1_word.h5')
 # summarize history for accuracy
 plt.plot(history.history['accuracy'])

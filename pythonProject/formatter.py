@@ -1,4 +1,4 @@
-file ='LIFE_wall.txt'
+import pickle
 
-uniqlines = set(open(file,'r', encoding='windows-1251').readlines())
-gotovo = open(file,'w', encoding='utf-8').writelines(set(uniqlines))
+history = pickle.load(open('1_history.obj', 'rb'))
+print(history)
